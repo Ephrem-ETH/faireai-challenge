@@ -1,0 +1,79 @@
+plugins {
+  id 'java'
+  id 'idea'
+  id 'jacoco'
+  id 'checkstyle'
+  id 'com.adarshr.test-logger' version '2.1.0'
+}
+
+repositories {
+  mavenLocal()
+  mavenCentral()
+}
+
+ext.versions = [
+  lombokVersion    : '1.18.20',
+  jacocoVersion    : '0.8.7',
+  checkstyleVersion: '8.36'
+]
+
+dependencies {
+  compileOnly "org.projectlombok:lombok:${versions.lombokVersion}"
+  annotationProcessor "org.projectlombok:lombok:${versions.lombokVersion}"
+  implementation 'io.vavr:vavr:0.10.4'
+  implementation 'ch.qos.logback:logback-classic:1.2.5'
+
+  // TEST
+  testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.2'
+  testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.2'
+  testCompileOnly 'org.projectlombok:lombok:1.18.20'
+  testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
+  testImplementation 'org.assertj:assertj-core:3.20.2'
+}
+
+sourceCompatibility = JavaVersion.VERSION_15
+targetCompatibility = JavaVersion.VERSION_15
+
+group = 'com.github.gilbertotcc.fintech'
+version = '0.0.1-SNAPSHOT'
+description = 'fintech-challenges'
+
+test {
+  useJUnitPlatform()
+  jacoco.destinationFile = file("$buildDir/jacoco/${name}.exec")
+}
+
+jacoco {
+  toolVersion = "${versions.jacocoVersion}"
+}
+
+tasks.withType(Test) {
+  finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+  dependsOn test
+  reports {
+    xml.enabled true
+    csv.enabled false
+    html.enabled true
+    html.destination file("${buildDir}/reports/jacocoHtml")
+  }
+}
+
+// CHECKSTYLE
+checkstyle {
+  toolVersion = "${versions.checkstyleVersion}"
+  showViolations = true
+  ignoreFailures = true
+}
+checkstyleMain.source = "src/main/java"
+checkstyleTest.source = "src/test/java"
+check.dependsOn test
+
+tasks.withType(Checkstyle) {
+  reports {
+    xml.enabled false
+    html.enabled true
+  }
+}
