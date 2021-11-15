@@ -20,13 +20,13 @@ public class BalanceHistory {
 	public BalanceHistory addTransaction(Transaction transaction) {
 
 		if (transaction.getBookedDate().isAfter(referenceBalance.getDate())) {
-			// Add the amount of the transaction on the referenced balance
+			// Add the amount of the transaction on the reference balance
 			var newAmount = referenceBalance.getAmount().add(transaction.getAmount());
 			balances.append(Balance.of(transaction.getBookedDate(), newAmount));
 		}
 
 		else if (transaction.getBookedDate().isBefore(referenceBalance.getDate())) {
-			// Subtract the amount of the transaction from the referenced balance
+			// Subtract the amount of the transaction from the reference balance
 
 			var newAmount = referenceBalance.getAmount().subtract(transaction.getAmount());
 			balances.append(Balance.of(transaction.getBookedDate(), newAmount));
